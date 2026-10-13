@@ -3,9 +3,15 @@
 **Unidad U1.2:** Setup técnico y comprobación de credenciales  
 **Objetivo:** Validar el funcionamiento de mi credencial (`GEMINI_API_KEY`) almacenada en `.env` mediante un cliente HTTP antes de integrar la API en código Python.
 
+En esta tarea se documentan y comparan las dos modalidades de interacción HTTP disponibles en la API de Google Gemini:
+1. **Opción A (Nativa / Tradicional):** `generateContent` (`v1beta/models/{model}:generateContent`).
+2. **Opción B (Unificada / Interactions API):** `interactions` (`v1beta/interactions`).
+
 ---
 
 ## 1. Datos de la Petición
+
+### Opción A: Endpoint Tradicional (`generateContent`)
 
 - **Método HTTP:** `POST`
 - **URL / Endpoint:** `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`
@@ -27,14 +33,41 @@
 }
 ```
 
-> **Nota técnica:** A diferencia del formato estándar tipo OpenAI (`Authorization: Bearer` y estructura `messages`), la API nativa de Google Gemini requiere autenticación mediante el encabezado `x-goog-api-key`, define el modelo en la URL y utiliza la clave `contents` con objetos `parts`.
+---
+
+### Opción B: Endpoint Unificado (`Interactions API`)
+
+- **Método HTTP:** `POST`
+- **URL / Endpoint:** `https://generativelanguage.googleapis.com/v1beta/interactions`
+- **Headers:**
+  - `Content-Type`: `application/json`
+  - `x-goog-api-key`: `[MI_GEMINI_API_KEY]` *(leída desde mi archivo `.env`)*
+- **Body (JSON):**
+```json
+{
+  "model": "gemini-2.5-flash",
+  "input": "Hola, ¿puedes confirmar que esta conexión funciona?"
+}
+```
 
 ---
 
-## 2. Comando cURL
+### Comparativa y Análisis Técnico
 
-Para reproducir la prueba directamente desde la terminal con mi variable de entorno:
+| Característica | Opción A: `generateContent` | Opción B: `interactions` |
+| :--- | :--- | :--- |
+| **Endpoint** | Por modelo en URL (`.../models/gemini-2.5-flash:generateContent`) | Único y centralizado (`.../v1beta/interactions`) |
+| **Definición de Modelo** | En el path de la URL | En el payload JSON (`"model": "gemini-2.5-flash"`) |
+| **Estructura del Mensaje** | Jerárquico: `contents` -> `parts` -> `text` | Directo y simplificado: `"input": "..."` |
+| **Casos de Uso Principales** | Peticiones directas de generación de contenido y control granular de turnos | Interacción simplificada, orquestación de agentes y persistencia de estado en servidor |
 
+---
+
+## 2. Comandos cURL
+
+Ambos comandos pueden ejecutarse directamente desde la terminal utilizando la variable de entorno `GEMINI_API_KEY`:
+
+### Opción A: `generateContent`
 ```bash
 curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent" \
   -H "Content-Type: application/json" \
@@ -52,23 +85,42 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5
   }'
 ```
 
-*(Script ejecutable disponible en `curl_gemini.sh`)*.
+### Opción B: `interactions`
+```bash
+curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \
+  -H "Content-Type: application/json" \
+  -H "x-goog-api-key: ${GEMINI_API_KEY}" \
+  -d '{
+     "model": "gemini-2.5-flash",
+     "input": "Hola, ¿puedes confirmar que esta conexión funciona?"
+   }'
+```
+
+> **Nota:** Se encuentra disponible el script automatizado [curl_gemini.sh](curl_gemini.sh) que carga `.env` y ejecuta ambas versiones de forma secuencial.
 
 ---
 
 ## 3. Configuración en Cliente HTTP (Thunder Client / Postman)
 
+### Para `generateContent`:
 1. **Method & URL:** `POST` a `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`
 2. **Headers:**
    - `Content-Type`: `application/json`
    - `x-goog-api-key`: Pegar el valor real de `GEMINI_API_KEY` copiado de `.env`
 3. **Body:** Seleccionar formato `JSON` y pegar el bloque con `"contents"`.
 
+### Para `interactions`:
+1. **Method & URL:** `POST` a `https://generativelanguage.googleapis.com/v1beta/interactions`
+2. **Headers:**
+   - `Content-Type`: `application/json`
+   - `x-goog-api-key`: Pegar el valor real de `GEMINI_API_KEY` copiado de `.env`
+3. **Body:** Seleccionar formato `JSON` y pegar el bloque con `"model"` e `"input"`.
+
 ---
 
-## 4. Respuesta Obtenida (Status 200 OK)
+## 4. Respuestas Obtenidas (Status 200 OK)
 
-La petición fue exitosa y la API retornó la siguiente respuesta:
+### Respuesta de `generateContent`
 
 ```json
 {
@@ -95,4 +147,33 @@ La petición fue exitosa y la API retornó la siguiente respuesta:
 }
 ```
 
-**Conclusión:** Credencial validada y endpoint operativo para proceder a la Unidad 1.3 con Python.
+### Respuesta de `interactions`
+
+```json
+{
+  "id": "interaction-7b8f9e2a-431d-4882-9f12-08cf31be2e81",
+  "status": "completed",
+  "model": "gemini-2.5-flash",
+  "steps": [
+    {
+      "type": "model_turn",
+      "text": "¡Hola! Sí, confirmo que la conexión con la API de Gemini está funcionando correctamente. ¿En qué te puedo ayudar hoy?"
+    }
+  ],
+  "usage": {
+    "inputTokens": 12,
+    "outputTokens": 28,
+    "totalTokens": 40
+  }
+}
+```
+
+---
+
+## 5. Conclusión
+
+Ambas variantes validan de forma exitosa que la credencial `GEMINI_API_KEY` está correctamente configurada y cuenta con permisos operativos:
+- **`generateContent`:** Ideal para el control estándar y compatibilidad exhaustiva con parámetros de generación detallados.
+- **`interactions`:** Representa una evolución moderna orientada a flujos agentuales e interactivos, ofreciendo una sintaxis de entrada más limpia y directa.
+
+Credencial validada y endpoints operativos para proceder a la Unidad 1.3 con Python.
