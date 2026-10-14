@@ -96,7 +96,7 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \
    }'
 ```
 
-> **Nota:** Se encuentra disponible el script automatizado [curl_gemini.sh](curl_gemini.sh) que carga `.env` y ejecuta ambas versiones de forma secuencial.
+> **Nota:** Se encuentra disponible el script automatizado [curl_gemini.sh](curl_gemini.sh) que carga `.env` y ejecuta ambas versiones secuencialmente.
 
 ---
 
@@ -118,7 +118,7 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \
 
 ---
 
-## 4. Respuestas Obtenidas (Status 200 OK)
+## 4. Respuestas Reales Obtenidas (Status 200 OK)
 
 ### Respuesta de `generateContent`
 
@@ -129,7 +129,7 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \
       "content": {
         "parts": [
           {
-            "text": "¡Hola!\n\nSí, puedo confirmar que la conexión funciona perfectamente. He recibido tu mensaje y estoy respondiendo ahora mismo.\n\n¿Hay algo más en lo que pueda ayudarte hoy?"
+            "text": "¡Hola! Sí, puedo confirmar que la conexión funciona perfectamente. He recibido tu mensaje y estoy listo para ayudarte.\n\n¿En qué puedo asistirte hoy?"
           }
         ],
         "role": "model"
@@ -140,10 +140,19 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \
   ],
   "usageMetadata": {
     "promptTokenCount": 12,
-    "candidatesTokenCount": 37,
-    "totalTokenCount": 749,
-    "modelVersion": "gemini-2.5-flash"
-  }
+    "candidatesTokenCount": 32,
+    "totalTokenCount": 575,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 12
+      }
+    ],
+    "thoughtsTokenCount": 531,
+    "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-2.5-flash",
+  "responseId": "IcXOasSvDqiP6dkPi9WxsQg"
 }
 ```
 
@@ -151,29 +160,67 @@ curl -X POST "https://generativelanguage.googleapis.com/v1beta/interactions" \
 
 ```json
 {
-  "id": "interaction-7b8f9e2a-431d-4882-9f12-08cf31be2e81",
+  "id": "v1_ChdLTVhPYXBpOEFZVDhxdHNQcnNMRjJBOBIXS01YT2FwaThBWVQ4cXRzUHJzTEYyQTg",
   "status": "completed",
-  "model": "gemini-2.5-flash",
+  "usage": {
+    "total_tokens": 507,
+    "total_input_tokens": 13,
+    "input_tokens_by_modality": [
+      {
+        "modality": "text",
+        "tokens": 13
+      }
+    ],
+    "total_cached_tokens": 0,
+    "total_output_tokens": 49,
+    "total_tool_use_tokens": 0,
+    "total_thought_tokens": 445
+  },
+  "created": "2026-10-13T23:56:24Z",
+  "updated": "2026-10-13T23:56:24Z",
+  "service_tier": "standard",
   "steps": [
     {
-      "type": "model_turn",
-      "text": "¡Hola! Sí, confirmo que la conexión con la API de Gemini está funcionando correctamente. ¿En qué te puedo ayudar hoy?"
+      "signature": "Cu8NAWkUfRM9f3...",
+      "type": "thought"
+    },
+    {
+      "content": [
+        {
+          "text": "¡Hola!\n\nSí, puedo confirmar que la conexión funciona perfectamente. El hecho de que hayas podido enviarme este mensaje y que yo te esté respondiendo es la prueba de ello.\n\n¿Hay algo más en lo que pueda ayudarte hoy?",
+          "type": "text"
+        }
+      ],
+      "type": "model_output"
     }
   ],
-  "usage": {
-    "inputTokens": 12,
-    "outputTokens": 28,
-    "totalTokens": 40
-  }
+  "object": "interaction",
+  "model": "gemini-2.5-flash"
 }
 ```
 
 ---
 
-## 5. Conclusión
+## 5. Análisis del Consumo de Tokens (Pensamiento / Chain of Thought)
 
-Ambas variantes validan de forma exitosa que la credencial `GEMINI_API_KEY` está correctamente configurada y cuenta con permisos operativos:
+La comparación de los datos reales confirma el comportamiento idéntico del modelo bajo ambos endpoints:
+
+| Métrica | Opción A: `generateContent` | Opción B: `interactions` |
+| :--- | :--- | :--- |
+| **Tokens de Entrada (Prompt)** | 12 | 13 |
+| **Tokens de Salida Visible** | 32 | 49 |
+| **Tokens de Razonamiento (*Thinking*)** | 531 (`thoughtsTokenCount`) | 445 (`total_thought_tokens`) |
+| **Tokens Totales** | **575** | **507** |
+
+**Conclusión técnica sobre tokens:**
+En ambos endpoints, el consumo principal (~85-90%) corresponde a los tokens de razonamiento interno generados por `gemini-2.5-flash`. El endpoint `interactions` consume prácticamente la misma cantidad de tokens que `generateContent` porque ambos invocan el mismo modelo subyacente.
+
+---
+
+## 6. Conclusión
+
+Ambas variantes validan con éxito que la credencial `GEMINI_API_KEY` está correctamente configurada y operativa:
 - **`generateContent`:** Ideal para el control estándar y compatibilidad exhaustiva con parámetros de generación detallados.
-- **`interactions`:** Representa una evolución moderna orientada a flujos agentuales e interactivos, ofreciendo una sintaxis de entrada más limpia y directa.
+- **`interactions`:** Representa una evolución moderna orientada a flujos agentuales e interactivos, ofreciendo una sintaxis de entrada más limpia y pasos de ejecución estructurados (`steps`).
 
 Credencial validada y endpoints operativos para proceder a la Unidad 1.3 con Python.
