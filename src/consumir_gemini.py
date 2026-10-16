@@ -5,7 +5,11 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def armar_peticion(pregunta):
+    if not pregunta or not pregunta.strip():
+        raise ValueError("La pregunta no puede estar vacía")
     api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key or not api_key.strip():
+        raise RuntimeError("Falta la variable GEMINI_API_KEY en el archivo .env")
     modelo = "gemini-3.5-flash-lite"
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
     headers = {"x-goog-api-key": api_key}
@@ -13,11 +17,21 @@ def armar_peticion(pregunta):
     return url, body, headers
 
 def enviar_peticion(url, body, headers):
-    respuesta = requests.post(url, headers=headers, json=body)
-    return respuesta.json()
+    try:
+        respuesta = requests.post(url, headers=headers, json=body)
+    except requests.exceptions.ConnectionError:
+        raise RuntimeError("No se pudo conectar con el servicio. Intenta de nuevo en unos segundos.")
+    try:
+        return respuesta.json() 
+    except requests.exceptions.JSONDecodeError:
+        raise RuntimeError("La respuesta del servicio no llegó en el formato esperado.")
 
 def extraer_texto(datos):
-    return datos["candidates"][0]["content"]["parts"][0]["text"]
+    try:
+        return datos["candidates"][0]["content"]["parts"][0]["text"]
+    except (KeyError, IndexError):
+        raise RuntimeError("La respuesta no trae el texto generado en el lugar esperado.")
+
 
 def obtener_dato_de_prueba(pregunta):
     url, body, headers = armar_peticion(pregunta)
@@ -25,4 +39,9 @@ def obtener_dato_de_prueba(pregunta):
     return extraer_texto(datos)
 
 if __name__ == "__main__":
-    print(obtener_dato_de_prueba("Confirma en una frase corta que esta conexión funciona"))
+    pregunta = "Confirma en una frase corta que esta conexión funciona"
+    try:
+        resultado = obtener_dato_de_prueba(pregunta)
+        print(resultado)
+    except (ValueError, RuntimeError) as error:
+        print(f"[ERROR] No se pudo completar la operación: {type(error).__name__}: {error}")
