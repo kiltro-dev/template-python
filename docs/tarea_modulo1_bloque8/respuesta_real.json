@@ -1,0 +1,31 @@
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "¡Conexión establecida y funcionando al 100%!",
+            "thoughtSignature": "EmAKXgFpFH0TaH6W6izTCkY8ye4dwDhc4W6fDolpK3lUI0KnmrRnZKDs3DXnvw1fSbpPlC9g9qCpLy+yF/znjnUTdzyKvhPV+5YxmFurZPg/BVOW4ohQHQH+z/UOhUUUWG4="
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "index": 0
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 10,
+    "candidatesTokenCount": 13,
+    "totalTokenCount": 23,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 10
+      }
+    ],
+    "serviceTier": "standard"
+  },
+  "modelVersion": "gemini-3.5-flash-lite",
+  "responseId": "wqDWarPBGOyIqtsPiei-0A4"
+}

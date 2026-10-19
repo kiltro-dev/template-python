@@ -33,6 +33,16 @@ def extraer_texto(datos):
         raise RuntimeError("La respuesta no trae el texto generado en el lugar esperado.")
 
 
+def calcular_costo(datos, precio_entrada, precio_salida):
+    try:
+        uso = datos["usageMetadata"]
+        tokens_entrada = uso["promptTokenCount"]
+        tokens_salida = uso["candidatesTokenCount"]
+    except (KeyError, TypeError):
+        raise RuntimeError("La respuesta no trae el uso de tokens en el lugar esperado.")
+    return (tokens_entrada * precio_entrada) + (tokens_salida * precio_salida)
+
+
 def obtener_dato_de_prueba(pregunta):
     url, body, headers = armar_peticion(pregunta)
     datos = enviar_peticion(url, body, headers)

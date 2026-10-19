@@ -1,0 +1,45 @@
+flowchart TD
+    USUARIO["👤 Pregunta del usuario<br/><i>texto libre</i>"]
+    ENV["🔐 .env<br/><b>GEMINI_API_KEY</b><br/><i>nunca se sube al repo</i>"]
+
+    ARMAR["<b>armar_peticion</b>(pregunta)<br/>──────────────────<br/>• pregunta vacía → <b>ValueError</b><br/>• sin API key → <b>RuntimeError</b><br/>• arma modelo · url · body · headers"]
+
+    ENVIAR["<b>enviar_peticion</b>(url, body, headers)<br/>──────────────────<br/><b>try:</b> requests.post<br/><b>except</b> ConnectionError → RuntimeError<br/>──────────────────<br/><b>try:</b> respuesta.json<br/><b>except</b> JSONDecodeError → RuntimeError"]
+
+    PROVEEDOR["☁️ <b>Proveedor Gemini API</b><br/>──────────────────<br/>1. Tokeniza la entrada<br/>2. Genera la respuesta <i>token a token</i><br/>3. Detokeniza la salida"]
+
+    DATOS["📦 <b>datos</b> (dict)<br/><i>respuesta JSON cruda</i><br/>candidates + usageMetadata"]
+
+    EXTRAER["<b>extraer_texto</b>(datos)<br/>──────────────────<br/><b>try:</b> candidates 0 · content<br/>· parts 0 · text<br/><b>except</b> (KeyError, IndexError)<br/>→ RuntimeError"]
+
+    CALCULAR["<b>calcular_costo</b>(datos,<br/>precio_entrada, precio_salida)<br/>──────────────────<br/>lee <b>usageMetadata</b><br/>promptTokenCount · candidatesTokenCount<br/><b>except</b> (KeyError, TypeError)<br/>→ RuntimeError<br/>──────────────────<br/>(tokens_ent × p_ent) + (tokens_sal × p_sal)"]
+
+    RESPUESTA["✅ <b>Respuesta final</b><br/><i>texto generado listo para el usuario</i>"]
+    COSTO["💰 <b>Costo calculado</b><br/><i>USD por esta petición</i>"]
+
+    USUARIO -->|"pregunta (str)"| ARMAR
+    ENV -->|"GEMINI_API_KEY (str)<br/>vía os.getenv"| ARMAR
+    ARMAR -->|"url · body · headers<br/>headers = x-goog-api-key"| ENVIAR
+    ENVIAR -->|"HTTP POST<br/>body = contents.parts.text"| PROVEEDOR
+    PROVEEDOR -->|"JSON crudo"| DATOS
+    DATOS -->|"datos (dict)"| EXTRAER
+    EXTRAER -->|"texto generado (str)"| RESPUESTA
+    DATOS -.->|"usageMetadata<br/>tokens de entrada y salida"| CALCULAR
+    CALCULAR -->|"costo (float, USD)"| COSTO
+
+    ORQUESTAR["<b>obtener_dato_de_prueba</b>(pregunta)<br/>──────────────────<br/>Orquesta la secuencia:<br/>armar_peticion → enviar_peticion → extraer_texto<br/>──────────────────<br/>main captura (ValueError, RuntimeError)<br/>e imprime [ERROR]"]
+    ORQUESTAR -.->|"invoca la secuencia"| ARMAR
+
+    classDef fn fill:#E8F0FE,stroke:#1A73E8,stroke-width:2px,color:#0B2E6F
+    classDef env fill:#FEF7E0,stroke:#F9AB00,stroke-width:2px,color:#7A4F01
+    classDef ext fill:#E6F4EA,stroke:#1E8E3E,stroke-width:2px,color:#0D652D
+    classDef data fill:#F1F3F4,stroke:#5F6368,stroke-width:2px,color:#202124
+    classDef out fill:#FCE8E6,stroke:#D93025,stroke-width:2px,color:#8C1D18
+    classDef user fill:#F3E8FD,stroke:#A142F4,stroke-width:2px,color:#5B1BA1
+
+    class ARMAR,ENVIAR,EXTRAER,CALCULAR,ORQUESTAR fn
+    class ENV env
+    class PROVEEDOR ext
+    class DATOS data
+    class RESPUESTA,COSTO out
+    class USUARIO user

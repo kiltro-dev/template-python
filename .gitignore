@@ -19,3 +19,8 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Herramientas de diagramación (Node.js / Mermaid.js)
+node_modules/
+chrome-headless-shell/
+package-lock.json
