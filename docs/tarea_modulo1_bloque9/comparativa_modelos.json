@@ -1,0 +1,152 @@
+{
+  "fecha_medicion": "2026-10-20",
+  "fecha_consulta_precios": "2026-10-20",
+  "pregunta_latencia": "Confirma en una frase corta que esta conexión funciona",
+  "intentos_por_modelo": 4,
+  "modelos": {
+    "gemini-2.5-flash": {
+      "precios_por_token_usd": {
+        "entrada": 3e-07,
+        "salida": 2.5e-06,
+        "fuente": "ai.google.dev/gemini-api/docs/pricing (Standard, USD/1M tokens)"
+      },
+      "latencia": {
+        "intentos": [
+          {
+            "intento": 1,
+            "latencia_segundos": 5.139328699999169,
+            "texto": "La conexión se ha establecido correctamente.",
+            "tokens_entrada": 10,
+            "tokens_salida": 7,
+            "costo_usd": 2.0500000000000004e-05,
+            "estado": "ok"
+          },
+          {
+            "intento": 2,
+            "latencia_segundos": 3.838736464000249,
+            "texto": "Confirmado: la conexión funciona.",
+            "tokens_entrada": 10,
+            "tokens_salida": 7,
+            "costo_usd": 2.0500000000000004e-05,
+            "estado": "ok"
+          },
+          {
+            "intento": 3,
+            "latencia_segundos": 5.72537746099988,
+            "texto": "**Esta conexión funciona.**",
+            "tokens_entrada": 10,
+            "tokens_salida": 5,
+            "costo_usd": 1.55e-05,
+            "estado": "ok"
+          },
+          {
+            "intento": 4,
+            "latencia_segundos": 2.8746471390004444,
+            "texto": "La conexión funciona.",
+            "tokens_entrada": 10,
+            "tokens_salida": 4,
+            "costo_usd": 1.3000000000000001e-05,
+            "estado": "ok"
+          }
+        ],
+        "promedio_segundos": 4.3945224409999355
+      },
+      "calidad": [
+        {
+          "pregunta": "¿Qué es un token en un modelo de lenguaje? Responde en una sola frase.",
+          "respuesta": "Un token es una unidad fundamental de texto (como una palabra, parte de una palabra o un símbolo) que un modelo de lenguaje procesa y utiliza para entender y generar información.",
+          "estado": "ok"
+        },
+        {
+          "pregunta": "Explica en dos frases por qué una respuesta larga tarda más en generarse que una corta.",
+          "respuesta": "Los modelos de IA generan texto prediciendo y produciendo cada palabra o \"token\" de forma secuencial. Por lo tanto, una respuesta larga simplemente requiere generar muchas más de estas unidades, lo que naturalmente implica más pasos computacionales y, consecuentemente, más tiempo.",
+          "estado": "ok"
+        },
+        {
+          "pregunta": "Propón un título corto para una miniaplicación que responde preguntas con IA.",
+          "respuesta": "Aquí tienes algunas opciones cortas y directas:\n\n**Muy Cortos:**\n\n*   **Pregunta IA**\n*   **Dime IA**\n*   **Responde IA**\n*   **IA Chat** (si es conversacional)\n*   **Mente IA**\n*   **Genio IA**\n\n**Un poco más descriptivos (pero aún cortos):**\n\n*   **Respuestas IA**\n*   **Consulta IA**\n*   **IA Sabia**\n*   **Tu IA**\n*   **Oráculo IA**\n\nMi recomendación principal sería **Pregunta IA** o **Respuestas IA** por su claridad y concisión. Si quieres algo más interactivo, **Dime IA** es muy bueno.",
+          "estado": "ok"
+        }
+      ],
+      "disponibilidad": {
+        "intentos_totales": 7,
+        "intentos_fallidos": 0,
+        "causas": {}
+      }
+    },
+    "gemini-3.6-flash": {
+      "precios_por_token_usd": {
+        "entrada": 7.5e-07,
+        "salida": 3.75e-06,
+        "fuente": "ai.google.dev/gemini-api/docs/pricing (Standard, USD/1M tokens, precio promocional vigente hasta 2026-12-31; duplica desde 2027-01-01)"
+      },
+      "latencia": {
+        "intentos": [
+          {
+            "intento": 1,
+            "latencia_segundos": 3.35621682999772,
+            "texto": "Confirmado, la conexión funciona perfectamente.",
+            "tokens_entrada": 10,
+            "tokens_salida": 8,
+            "costo_usd": 3.7500000000000003e-05,
+            "estado": "ok"
+          },
+          {
+            "intento": 2,
+            "latencia_segundos": 3.6464059489990177,
+            "texto": "Confirmado, la conexión funciona correctamente.",
+            "tokens_entrada": 10,
+            "tokens_salida": 8,
+            "costo_usd": 3.7500000000000003e-05,
+            "estado": "ok"
+          },
+          {
+            "intento": 3,
+            "latencia_segundos": 3.694196683998598,
+            "texto": "Confirmado, la conexión funciona correctamente.",
+            "tokens_entrada": 10,
+            "tokens_salida": 8,
+            "costo_usd": 3.7500000000000003e-05,
+            "estado": "ok"
+          },
+          {
+            "intento": 4,
+            "latencia_segundos": 2.132236223998916,
+            "texto": "Confirmado, la conexión funciona correctamente.",
+            "tokens_entrada": 10,
+            "tokens_salida": 8,
+            "costo_usd": 3.7500000000000003e-05,
+            "estado": "ok"
+          }
+        ],
+        "promedio_segundos": 3.207263921748563
+      },
+      "calidad": [
+        {
+          "pregunta": "¿Qué es un token en un modelo de lenguaje? Responde en una sola frase.",
+          "respuesta": "Un token es la unidad básica de texto (que puede ser una palabra, una subpalabra o un solo carácter) que un modelo de lenguaje utiliza para procesar, comprender y generar información.",
+          "estado": "ok"
+        },
+        {
+          "pregunta": "Explica en dos frases por qué una respuesta larga tarda más en generarse que una corta.",
+          "respuesta": null,
+          "estado": "fallido",
+          "error": "RuntimeError: El servicio rechazó la petición (429 RESOURCE_EXHAUSTED): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 7h43m40.866652381s."
+        },
+        {
+          "pregunta": "Propón un título corto para una miniaplicación que responde preguntas con IA.",
+          "respuesta": null,
+          "estado": "fallido",
+          "error": "RuntimeError: El servicio rechazó la petición (429 RESOURCE_EXHAUSTED): You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\nPlease retry in 7h43m39.770151713s."
+        }
+      ],
+      "disponibilidad": {
+        "intentos_totales": 7,
+        "intentos_fallidos": 2,
+        "causas": {
+          "RuntimeError: El servicio rechazó la petición (429 RESOURCE_EXHAUSTED": 2
+        }
+      }
+    }
+  }
+}

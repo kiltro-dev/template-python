@@ -4,13 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def armar_peticion(pregunta):
+def armar_peticion(pregunta, modelo="gemini-2.5-flash"):
     if not pregunta or not pregunta.strip():
         raise ValueError("La pregunta no puede estar vacía")
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key or not api_key.strip():
         raise RuntimeError("Falta la variable GEMINI_API_KEY en el archivo .env")
-    modelo = "gemini-3.5-flash-lite"
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent"
     headers = {"x-goog-api-key": api_key}
     body = {"contents": [{"parts": [{"text": pregunta}]}]}
@@ -22,9 +21,23 @@ def enviar_peticion(url, body, headers):
     except requests.exceptions.ConnectionError:
         raise RuntimeError("No se pudo conectar con el servicio. Intenta de nuevo en unos segundos.")
     try:
-        return respuesta.json() 
+        datos = respuesta.json()
     except requests.exceptions.JSONDecodeError:
         raise RuntimeError("La respuesta del servicio no llegó en el formato esperado.")
+    if not isinstance(datos, dict):
+        raise RuntimeError(f"La respuesta del servicio no es un objeto JSON: {str(datos)[:200]}")
+    if "error" in datos:
+        detalle = datos["error"]
+        codigo = detalle.get("code", "?")
+        mensaje = detalle.get("message", "sin detalle")
+        estado = detalle.get("status", "")
+        raise RuntimeError(f"El servicio rechazó la petición ({codigo} {estado}): {mensaje}")
+    if "candidates" not in datos:
+        raise RuntimeError(
+            "La respuesta no trae el bloque 'candidates' que se esperaba. "
+            f"Contenido recibido: {str(datos)[:300]}"
+        )
+    return datos
 
 def extraer_texto(datos):
     try:
