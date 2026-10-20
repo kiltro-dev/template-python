@@ -56,23 +56,16 @@ def calcular_costo(datos, precio_entrada, precio_salida):
     return (tokens_entrada * precio_entrada) + (tokens_salida * precio_salida)
 
 
-def obtener_dato_de_prueba(pregunta, precio_entrada, precio_salida, modelo="gemini-2.5-flash"):
-    url, body, headers = armar_peticion(pregunta, modelo=modelo)
+def obtener_dato_de_prueba(pregunta):
+    url, body, headers = armar_peticion(pregunta)
     datos = enviar_peticion(url, body, headers)
-    return {
-        "texto": extraer_texto(datos),
-        "costo": calcular_costo(datos, precio_entrada, precio_salida),
-    }
+    return extraer_texto(datos)
 
 
 if __name__ == "__main__":
-    # Precios por token (USD). Confirmar siempre en la pagina de precios vigente del proveedor.
-    PRECIO_ENTRADA = 0.30 / 1_000_000
-    PRECIO_SALIDA = 2.50 / 1_000_000
     pregunta = "Confirma en una frase corta que esta conexión funciona"
     try:
-        resultado = obtener_dato_de_prueba(pregunta, PRECIO_ENTRADA, PRECIO_SALIDA)
-        print(resultado["texto"])
-        print(f"Costo de la peticion: {resultado['costo']:.6f} USD")
+        resultado = obtener_dato_de_prueba(pregunta)
+        print(resultado)
     except (ValueError, RuntimeError) as error:
         print(f"[ERROR] No se pudo completar la operación: {type(error).__name__}: {error}")
