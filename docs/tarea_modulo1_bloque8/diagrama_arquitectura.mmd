@@ -27,7 +27,7 @@ flowchart TD
     DATOS -.->|"usageMetadata<br/>tokens de entrada y salida"| CALCULAR
     CALCULAR -->|"costo (float, USD)"| COSTO
 
-    ORQUESTAR["<b>obtener_dato_de_prueba</b>(pregunta)<br/>──────────────────<br/>Orquesta la secuencia:<br/>armar_peticion → enviar_peticion → extraer_texto<br/>──────────────────<br/>main captura (ValueError, RuntimeError)<br/>e imprime [ERROR]"]
+    ORQUESTAR["<b>obtener_dato_de_prueba</b>(pregunta, precio_entrada, precio_salida)<br/>──────────────────<br/>Orquesta la secuencia:<br/>armar_peticion → enviar_peticion<br/>→ extraer_texto + calcular_costo<br/>──────────────────<br/>main captura (ValueError, RuntimeError)<br/>e imprime [ERROR]"]
     ORQUESTAR -.->|"invoca la secuencia"| ARMAR
 
     classDef fn fill:#E8F0FE,stroke:#1A73E8,stroke-width:2px,color:#0B2E6F
