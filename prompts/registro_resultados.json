@@ -1,0 +1,37 @@
+{
+  "clasificar_sentimiento": {
+    "exitos": 3,
+    "intentos": 3,
+    "fallos_api": [],
+    "fallos_estructura": [],
+    "modelo": "gemini-2.5-flash"
+  },
+  "clasificar_consulta": {
+    "exitos": 3,
+    "intentos": 3,
+    "fallos_api": [],
+    "fallos_estructura": [],
+    "modelo": "gemini-2.5-flash"
+  },
+  "extraer_entidades": {
+    "exitos": 3,
+    "intentos": 3,
+    "fallos_api": [],
+    "fallos_estructura": [],
+    "modelo": "gemini-2.5-flash"
+  },
+  "generar_resumen": {
+    "exitos": 3,
+    "intentos": 3,
+    "fallos_api": [],
+    "fallos_estructura": [],
+    "modelo": "gemini-2.5-flash"
+  },
+  "detectar_idioma": {
+    "modelo": "gemini-3.5-flash",
+    "exitos": 3,
+    "intentos": 3,
+    "fallos_api": [],
+    "fallos_estructura": []
+  }
+}
