@@ -88,6 +88,8 @@ Las cuatro pruebas pasaron:
 
 Capturados con el módulo propio (`armar_peticion` → `enviar_peticion` → `extraer_texto` → `calcular_costo`) contra el modelo `gemini-3.5-flash-lite`. El JSON completo está en [`respuesta_real.json`](respuesta_real.json).
 
+> **Nota de contexto:** estas mediciones corresponden al modelo vigente en la fecha de este bloque. Posteriormente, el [ADR del Bloque 9](../tarea_modulo1_bloque9/decision-arquitectura.md) evaluó los candidatos con datos reales y cambió el modelo por defecto de la miniaplicación a `gemini-2.5-flash`.
+
 **Pregunta enviada:** `Confirma en una frase corta que esta conexión funciona`
 
 **Respuesta generada (en `respuesta_real.json`):** `¡Conexión establecida y funcionando al 100%!`
