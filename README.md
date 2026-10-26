@@ -1,8 +1,8 @@
 # Miniaplicación con API de Gemini
 
-> **Especialización en Desarrollo con IA Generativa (Accenture) — Módulo 1 · Gate 1**
+> **Especialización en Desarrollo con IA Generativa (Accenture) — Gate 1 aprobado · Módulo 2 en curso**
 >
-> Miniaplicación que envía preguntas a la API de Gemini vía REST y devuelve la respuesta. El proyecto incluye además el cálculo del costo real por petición, manejo de errores, prompts de sistema, salida JSON estructurada y un banco de prompts con validación de consistencia.
+> Miniaplicación que envía preguntas a la API de Gemini vía REST y devuelve la respuesta. El proyecto incluye además el cálculo del costo real por petición, manejo de errores, prompts de sistema, salida JSON estructurada, un banco de prompts con validación de consistencia y un cliente modular con reintento y clasificación de errores.
 
 Este repositorio es el proyecto único del programa: nace como esta miniaplicación (Módulo 1) y crece hasta la aplicación generativa completa del Gate 3 (Módulo 2: LangChain, agentes y RAG · Módulo 3: FastAPI, Docker y QA).
 
@@ -44,6 +44,7 @@ Confirmado: la conexión funciona.
 ```
 ├── src/
 │   ├── consumir_gemini.py     # módulo principal: cliente REST de la API
+│   ├── cliente.py             # cliente modular: consultar_modelo con reintento y clasificación de errores
 │   ├── main.py                # punto de entrada de la miniaplicación
 │   ├── probar_costo.py        # pruebas de calcular_costo
 │   ├── comparar_modelos.py    # medición de latencia/costo/calidad (evidencia del ADR)
@@ -64,13 +65,20 @@ Desde la raíz del repositorio, con el entorno virtual activo:
 | Comando | Qué hace | Evidencia |
 | :--- | :--- | :--- |
 | `python src/main.py` | Miniaplicación: pregunta → respuesta | consola |
+| `python src/cliente.py` | Cliente modular: consulta con reintento automático | consola |
 | `python src/probar_costo.py` | Pruebas de `calcular_costo` (datos sintéticos + petición real) | consola |
 | `python src/comparar_modelos.py` | Latencia, costo y calidad de 2 modelos | `docs/tarea_modulo1_bloque9/comparativa_modelos.json` |
 | `python prompts/test_consistencia.py` | Banco de prompts, 3 repeticiones c/u | `prompts/registro_resultados.json` |
 
 ## El módulo (`src/consumir_gemini.py`)
 
-Cliente REST con funciones separadas y su propio manejo de errores: `armar_peticion` (arma la petición, acepta `system_instruction` y `response_schema`), `enviar_peticion` (envía y expone el error real de la API), `extraer_texto` (camino texto), `calcular_costo` (camino costo, desde `usageMetadata`), `parsear_respuesta_json` (camino JSON) y `obtener_dato_de_prueba` (orquesta el flujo principal). Cada consumidor usa el subconjunto que necesita: la miniaplicación usa el flujo texto; los scripts usan costo y JSON.
+Cliente REST con funciones separadas y su propio manejo de errores: `armar_peticion` (arma la petición, acepta `system_instruction` y `response_schema`), `enviar_peticion` (envía, clasifica el error y expone el detalle real de la API), `extraer_texto` (camino texto), `calcular_costo` (camino costo, desde `usageMetadata`), `parsear_respuesta_json` (camino JSON) y `obtener_dato_de_prueba` (orquesta el flujo principal). Cada consumidor usa el subconjunto que necesita: la miniaplicación usa el flujo texto; los scripts usan costo y JSON.
+
+**Clasificación de errores (Módulo 2):** `enviar_peticion` distingue lo que no se resuelve reintentando (`ValueError`: credencial inválida o sin permiso) de lo que es temporal (`TimeoutError`: límite de uso, falla del proveedor o de red).
+
+## El cliente modular (`src/cliente.py`)
+
+Punto de entrada único `consultar_modelo(pregunta, system_instruction="")`: arma la petición, la envuelve en `con_reintento` (3 intentos, espera de 2 s cuando el error es temporal), extrae el texto y traduce los reintentos agotados a un `RuntimeError` con mensaje claro. El `ValueError` de credencial se propaga sin reintentar.
 
 ## Documentación y evidencias
 

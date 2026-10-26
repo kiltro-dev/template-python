@@ -49,7 +49,7 @@ def probar_prompt(prompt, modelo):
             datos = parsear_respuesta_json(texto, prompt["claves_esperadas"])
             exitos += 1
             print(f"  intento {intento}: ok -> {datos}")
-        except RuntimeError as error:
+        except (RuntimeError, TimeoutError) as error:
             fallos_api.append(f"intento {intento}: {error}")
             print(f"  intento {intento} falló (API): {error}")
         except ValueError as error:

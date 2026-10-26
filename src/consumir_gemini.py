@@ -29,12 +29,38 @@ def armar_peticion(pregunta, system_instruction=None, response_schema=None, mode
 
 def enviar_peticion(url, body, headers):
     try:
-        respuesta = requests.post(url, headers=headers, json=body)
-    except requests.exceptions.ConnectionError:
-        raise RuntimeError("No se pudo conectar con el servicio. Intenta de nuevo en unos segundos.")
+        respuesta = requests.post(url, headers=headers, json=body, timeout=10)
+    except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
+        raise TimeoutError("No se pudo contactar al proveedor. Puede ser momentáneo.")
     try:
         datos = respuesta.json()
     except requests.exceptions.JSONDecodeError:
+        datos = None
+    codigo_http = respuesta.status_code
+    error_api = datos.get("error", {}) if isinstance(datos, dict) else {}
+    codigo = error_api.get("code", codigo_http)
+    estado = error_api.get("status", "")
+    mensaje = error_api.get("message", "")
+    # Clasificación (Bloque 12): ValueError = credencial, no se reintenta;
+    # TimeoutError = temporal (límite de uso o falla del proveedor), sí se reintenta.
+    if (
+        codigo_http in (401, 403)
+        or codigo in (401, 403)
+        or estado in ("UNAUTHENTICATED", "PERMISSION_DENIED")
+        # Una API key inválida llega como 400 INVALID_ARGUMENT ("API key not valid"),
+        # no como 401/403: se detecta por el mensaje del sobre de error.
+        or (codigo_http == 400 and "api key" in mensaje.lower())
+    ):
+        raise ValueError("Credencial inválida o sin permiso. Revisa tu GEMINI_API_KEY.")
+    if (
+        codigo_http == 429
+        or codigo_http >= 500
+        or codigo == 429
+        or codigo >= 500
+        or estado in ("RESOURCE_EXHAUSTED", "UNAVAILABLE")
+    ):
+        raise TimeoutError("El proveedor no pudo procesar la petición. Hay que esperar y reintentar.")
+    if datos is None:
         raise RuntimeError("La respuesta del servicio no llegó en el formato esperado.")
     if not isinstance(datos, dict):
         raise RuntimeError(f"La respuesta del servicio no es un objeto JSON: {str(datos)[:200]}")
