@@ -49,8 +49,9 @@ def enviar_peticion(url, body, headers):
         or estado in ("UNAUTHENTICATED", "PERMISSION_DENIED")
         # Una API key inválida llega como 400 INVALID_ARGUMENT ("API key not valid"),
         # no como 401/403: se detecta por el mensaje del sobre de error.
-        or (codigo_http == 400 and "api key" in mensaje.lower())
+       # or (codigo_http == 400 and "api key" in mensaje.lower())
     ):
+        print(codigo)
         raise ValueError("Credencial inválida o sin permiso. Revisa tu GEMINI_API_KEY.")
     if (
         codigo_http == 429

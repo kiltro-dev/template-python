@@ -24,3 +24,6 @@ Thumbs.db
 node_modules/
 chrome-headless-shell/
 package-lock.json
+
+# Apuntes de estudio (sitio personal, no se sube)
+apuntes/

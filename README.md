@@ -65,7 +65,7 @@ Desde la raíz del repositorio, con el entorno virtual activo:
 | Comando | Qué hace | Evidencia |
 | :--- | :--- | :--- |
 | `python src/main.py` | Miniaplicación: pregunta → respuesta | consola |
-| `python src/cliente.py` | Cliente modular: consulta con reintento automático | consola |
+| `python src/cliente.py` | Ensayo de rate limit: 10 consultas seguidas con reintento y costo | consola |
 | `python src/probar_costo.py` | Pruebas de `calcular_costo` (datos sintéticos + petición real) | consola |
 | `python src/comparar_modelos.py` | Latencia, costo y calidad de 2 modelos | `docs/tarea_modulo1_bloque9/comparativa_modelos.json` |
 | `python prompts/test_consistencia.py` | Banco de prompts, 3 repeticiones c/u | `prompts/registro_resultados.json` |
@@ -78,7 +78,7 @@ Cliente REST con funciones separadas y su propio manejo de errores: `armar_petic
 
 ## El cliente modular (`src/cliente.py`)
 
-Punto de entrada único `consultar_modelo(pregunta, system_instruction="")`: arma la petición, la envuelve en `con_reintento` (3 intentos, espera de 2 s cuando el error es temporal), extrae el texto y traduce los reintentos agotados a un `RuntimeError` con mensaje claro. El `ValueError` de credencial se propaga sin reintentar.
+Punto de entrada único `consultar_modelo(pregunta, system_instruction="", modelo="gemini-2.5-flash")`: arma la petición, la envuelve en `con_reintento` (3 intentos, backoff exponencial con tope de 30 s y jitter cuando el error es temporal), registra el costo de cada operación con `registrar_costo` (entrada y salida por separado con los precios del modelo, acumulado de sesión), extrae el texto y traduce los reintentos agotados a un `RuntimeError` con mensaje claro. El `ValueError` de credencial se propaga sin reintentar.
 
 ## Documentación y evidencias
 
@@ -104,6 +104,15 @@ git log --all --oneline -- .env  # no debe devolver nada
   - `python src/main.py`: respuesta del modelo, proceso terminado sin errores
   - seguridad en la copia clonada: `git status` no lista `.env` · `git ls-files | grep .env` solo `.env.example` · `git log --all -- .env` sin resultados (la credencial nunca se commiteó)
 - **Corregido:** —
+
+## Registro del ensayo de rate limit (Bloque 13)
+
+- **Fecha:** 2026-10-26 · **Modelo:** `gemini-3.6-flash` (cupos más bajos que el modelo por defecto; elegido a propósito para provocar el límite)
+- **Peticiones enviadas:** 10 (bucle de `python src/cliente.py`, sin esperas entre llamadas)
+- **Petición donde apareció el primer 429:** la número 2 (Respuesta 1) — reintento exitoso
+- **Esperas observadas:** `2.2s` · `2.0s → 4.1s` · `2.0s → 4.4s` · `2.0s → 4.0s` · `2.0s` — crecimiento exponencial con jitter (2 → 4), correcto
+- **Costo total del ensayo:** `$0.001223 USD` — registrado solo en las 8 peticiones que completaron
+- **Resultado:** 8/10 con éxito (2 de ellas tras reintentar); 2 agotaron los 3 intentos y terminaron en `RuntimeError` con mensaje claro. Las peticiones fallidas no registraron costo. Se observó además un 429 real en vivo con backoff funcionando (esperas 2 → 4 s).
 
 ## Qué sigue
 
