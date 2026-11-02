@@ -1,0 +1,82 @@
+[
+  {
+    "consulta": "¿Qué es la fotosíntesis?",
+    "f1": 0.33,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "respuesta correcta y más completa que la referencia (agrega algas, bacterias, luz, agua y CO2); F1 bajo por verbosidad, no por error"
+  },
+  {
+    "consulta": "¿Qué significa ADN?",
+    "f1": 0.38,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "cubre la referencia exacta y agrega una cláusula correcta (molécula con información genética); F1 bajo por palabras de más"
+  },
+  {
+    "consulta": "¿Qué es Python?",
+    "f1": 0.43,
+    "correccion_factual": "si",
+    "completitud": "parcialmente",
+    "contradiccion": "no",
+    "nota": "todo lo que dice es correcto, pero omite 'interpretado', el dato central de la referencia; lo compensa con rasgos ciertos (alto nivel, sintaxis clara)"
+  },
+  {
+    "consulta": "¿Cuándo se creó Python?",
+    "f1": 0.45,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "matiza década de 1980 y confirma implementación en 1991, coincidiendo con la referencia; F1 medio por paráfrasis, no por error"
+  },
+  {
+    "consulta": "¿Qué es una lista en Python?",
+    "f1": 0.54,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "'mutable' es sinónimo de 'modificable' y el detalle extra (tipos diferentes) es correcto; F1 medio por paráfrasis"
+  },
+  {
+    "consulta": "¿Quién pintó la Mona Lisa?",
+    "f1": 1.0,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "coincidencia exacta tras normalizar; el 1.0 sí es respuesta perfecta"
+  },
+  {
+    "consulta": "¿Cuántos continentes hay?",
+    "f1": 1.0,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "coincidencia exacta tras normalizar; el 1.0 sí es respuesta perfecta"
+  },
+  {
+    "consulta": "¿Qué gas necesitamos respirar para vivir?",
+    "f1": 1.0,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "coincidencia exacta tras normalizar; el 1.0 sí es respuesta perfecta"
+  },
+  {
+    "consulta": "¿En qué año cayó el muro de Berlín?",
+    "f1": 1.0,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "coincidencia exacta tras normalizar ('Muro' vs 'muro' lo resuelve la limpieza); el 1.0 sí es respuesta perfecta"
+  },
+  {
+    "consulta": "¿Cuál es la capital de Francia?",
+    "f1": 1.0,
+    "correccion_factual": "si",
+    "completitud": "si",
+    "contradiccion": "no",
+    "nota": "coincidencia exacta tras normalizar; el 1.0 sí es respuesta perfecta"
+  }
+]

@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-def armar_peticion(pregunta, system_instruction=None, response_schema=None, modelo="gemini-2.5-flash"):
+def armar_peticion(pregunta, system_instruction=None, response_schema=None, modelo="gemini-3.5-flash-lite"):
     if not pregunta or not pregunta.strip():
         raise ValueError("La pregunta no puede estar vacía")
     if system_instruction is not None and not system_instruction.strip():
@@ -47,11 +47,11 @@ def enviar_peticion(url, body, headers):
         codigo_http in (401, 403)
         or codigo in (401, 403)
         or estado in ("UNAUTHENTICATED", "PERMISSION_DENIED")
-        # Una API key inválida llega como 400 INVALID_ARGUMENT ("API key not valid"),
-        # no como 401/403: se detecta por el mensaje del sobre de error.
-       # or (codigo_http == 400 and "api key" in mensaje.lower())
+        # Una API key inválida llega como 400 INVALID_ARGUMENT ("API key not valid")
+        # o como 401/403 según el formato de la key: se detecta por el mensaje
+        # del sobre de error además de por el código.
+        or (codigo_http == 400 and "api key" in mensaje.lower())
     ):
-        print(codigo)
         raise ValueError("Credencial inválida o sin permiso. Revisa tu GEMINI_API_KEY.")
     if (
         codigo_http == 429

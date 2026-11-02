@@ -1,0 +1,162 @@
+[
+  {
+    "consulta": "¿Qué es Python?",
+    "respuesta": "Python es un lenguaje de programación de alto nivel, de propósito general y fácil de aprender, valorado por su sintaxis clara.",
+    "precision": 0.2857142857142857,
+    "cobertura": 0.8571428571428571,
+    "f1": 0.42857142857142855,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Cuándo se creó Python?",
+    "respuesta": "Python fue creado a finales de la década de 1980, con su primera implementación lanzada en 1991.",
+    "precision": 0.29411764705882354,
+    "cobertura": 1.0,
+    "f1": 0.45454545454545453,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Qué es una lista en Python?",
+    "respuesta": "Una lista en Python es una colección ordenada y mutable de elementos que pueden ser de diferentes tipos.",
+    "precision": 0.3888888888888889,
+    "cobertura": 0.875,
+    "f1": 0.5384615384615385,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Cuál es la capital de Chile?",
+    "respuesta": "La capital de Chile es Santiago.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿De qué color es el cielo?",
+    "respuesta": "El cielo es principalmente azul durante el día.",
+    "precision": 0.5,
+    "cobertura": 1.0,
+    "f1": 0.6666666666666666,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Cuál es la fórmula química del agua?",
+    "respuesta": "La fórmula química del agua es H2O.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Quién escribió Don Quijote?",
+    "respuesta": "Miguel de Cervantes Saavedra escribió Don Quijote.",
+    "precision": 0.8571428571428571,
+    "cobertura": 1.0,
+    "f1": 0.923076923076923,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Cuántos días tiene un año bisiesto?",
+    "respuesta": "Un año bisiesto tiene 366 días.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-3.5-flash-lite"
+  },
+  {
+    "consulta": "¿Qué planeta es el más cercano al Sol?",
+    "respuesta": "El planeta más cercano al Sol es Mercurio.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-3.5-flash-lite"
+  },
+  {
+    "consulta": "¿En qué año llegó el hombre a la Luna?",
+    "respuesta": "El hombre llegó a la Luna en el año 1969.",
+    "precision": 0.8,
+    "cobertura": 1.0,
+    "f1": 0.888888888888889,
+    "modelo": "gemini-3.5-flash-lite"
+  },
+  {
+    "consulta": "¿Qué es la fotosíntesis?",
+    "respuesta": "La fotosíntesis es el proceso mediante el cual las plantas, las algas y algunas bacterias convierten la luz solar, el agua y el dióxido de carbono en nutrientes y oxígeno.",
+    "precision": 0.23333333333333334,
+    "cobertura": 0.5833333333333334,
+    "f1": 0.33333333333333337,
+    "modelo": "gemini-3.5-flash-lite"
+  },
+  {
+    "consulta": "¿Cuál es el océano más grande?",
+    "respuesta": "El océano más grande es el Pacífico.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Quién pintó la Mona Lisa?",
+    "respuesta": "Leonardo da Vinci pintó la Mona Lisa.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Cuántos continentes hay?",
+    "respuesta": "Hay siete continentes.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Qué gas necesitamos respirar para vivir?",
+    "respuesta": "Necesitamos respirar oxígeno para vivir.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Cuál es el río más largo del mundo?",
+    "respuesta": "El río más largo del mundo es el río Nilo, aunque el río Amazonas es el más caudaloso.",
+    "precision": 0.5,
+    "cobertura": 1.0,
+    "f1": 0.6666666666666666,
+    "modelo": "gemini-3.5-flash-lite"
+  },
+  {
+    "consulta": "¿En qué año cayó el muro de Berlín?",
+    "respuesta": "El Muro de Berlín cayó en 1989.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Qué instrumento mide la temperatura?",
+    "respuesta": "El instrumento que mide la temperatura es el termómetro.",
+    "precision": 0.5555555555555556,
+    "cobertura": 1.0,
+    "f1": 0.7142857142857143,
+    "modelo": "gemini-3.5-flash-lite"
+  },
+  {
+    "consulta": "¿Cuál es la capital de Francia?",
+    "respuesta": "La capital de Francia es París.",
+    "precision": 1.0,
+    "cobertura": 1.0,
+    "f1": 1.0,
+    "modelo": "gemini-2.5-flash"
+  },
+  {
+    "consulta": "¿Qué significa ADN?",
+    "respuesta": "ADN significa ácido desoxirribonucleico, que es la molécula que contiene la información genética de los seres vivos.",
+    "precision": 0.23529411764705882,
+    "cobertura": 1.0,
+    "f1": 0.38095238095238093,
+    "modelo": "gemini-3.5-flash-lite"
+  }
+]

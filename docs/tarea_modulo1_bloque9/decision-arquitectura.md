@@ -1,5 +1,7 @@
 # Decisión de arquitectura: elección de modelo
 
+> **Estado: reemplazada el 2026-11-02 por [cambio-decision-modelo.md](cambio-decision-modelo.md).** Lo de abajo se conserva intacto: fue la decisión correcta con los datos del 2026-10-20.
+
 **Fecha de la decisión:** 2026-10-20
 **Alcance:** modelo de lenguaje detrás de la miniaplicación (`src/consumir_gemini.py`).
 

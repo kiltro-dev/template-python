@@ -52,7 +52,7 @@ Confirmado: la conexión funciona.
 │   └── test_conexion.py       # legado de bloques previos
 ├── prompts/                   # banco de 5 prompts + validación de consistencia
 ├── docs/                      # diagrama de arquitectura, decisión de modelo, evidencias
-├── tests/                     # reservado para pruebas automatizadas (Módulo 2)
+├── tests/                     # suite pytest del cliente modular y del pipeline (Bloques 14-15)
 ├── requirements.txt
 ├── .env.example
 └── .gitignore
@@ -69,6 +69,7 @@ Desde la raíz del repositorio, con el entorno virtual activo:
 | `python src/probar_costo.py` | Pruebas de `calcular_costo` (datos sintéticos + petición real) | consola |
 | `python src/comparar_modelos.py` | Latencia, costo y calidad de 2 modelos | `docs/tarea_modulo1_bloque9/comparativa_modelos.json` |
 | `python prompts/test_consistencia.py` | Banco de prompts, 3 repeticiones c/u | `prompts/registro_resultados.json` |
+| `python -m pytest tests/ -v` | Suite unitaria: cliente modular y pipeline, con mocks y sin API | consola |
 
 ## El módulo (`src/consumir_gemini.py`)
 
@@ -78,12 +79,12 @@ Cliente REST con funciones separadas y su propio manejo de errores: `armar_petic
 
 ## El cliente modular (`src/cliente.py`)
 
-Punto de entrada único `consultar_modelo(pregunta, system_instruction="", modelo="gemini-2.5-flash")`: arma la petición, la envuelve en `con_reintento` (3 intentos, backoff exponencial con tope de 30 s y jitter cuando el error es temporal), registra el costo de cada operación con `registrar_costo` (entrada y salida por separado con los precios del modelo, acumulado de sesión), extrae el texto y traduce los reintentos agotados a un `RuntimeError` con mensaje claro. El `ValueError` de credencial se propaga sin reintentar.
+Punto de entrada único `consultar_modelo(pregunta, system_instruction="", modelo="gemini-3.5-flash-lite")`: arma la petición, la envuelve en `con_reintento` (3 intentos, backoff exponencial con tope de 30 s y jitter cuando el error es temporal), registra el costo de cada operación con `registrar_costo` (entrada y salida por separado con los precios del modelo, acumulado de sesión), extrae el texto y traduce los reintentos agotados a un `RuntimeError` con mensaje claro. El `ValueError` de credencial se propaga sin reintentar.
 
 ## Documentación y evidencias
 
 - 🏗️ **[Diagrama de arquitectura](docs/tarea_modulo1_bloque8/diagrama_arquitectura.png)** — flujo completo, credenciales, errores y cálculo de costo
-- ⚖️ **[Decisión de modelo](docs/tarea_modulo1_bloque9/decision-arquitectura.md)** — `gemini-2.5-flash` elegido con datos reales de costo, latencia, calidad y disponibilidad
+- ⚖️ **[Decisión de modelo](docs/tarea_modulo1_bloque9/cambio-decision-modelo.md)** — `gemini-3.5-flash-lite` por defecto desde el 2026-11-02 (reemplaza a la [decisión original](docs/tarea_modulo1_bloque9/decision-arquitectura.md) de `gemini-2.5-flash`), con datos reales de costo, latencia, calidad y disponibilidad
 - 🧩 **[Banco de prompts](prompts/README.md)** — 5 prompts, consistencia 3/3 medida contra la API
 
 ## Seguridad
@@ -113,6 +114,19 @@ git log --all --oneline -- .env  # no debe devolver nada
 - **Esperas observadas:** `2.2s` · `2.0s → 4.1s` · `2.0s → 4.4s` · `2.0s → 4.0s` · `2.0s` — crecimiento exponencial con jitter (2 → 4), correcto
 - **Costo total del ensayo:** `$0.001223 USD` — registrado solo en las 8 peticiones que completaron
 - **Resultado:** 8/10 con éxito (2 de ellas tras reintentar); 2 agotaron los 3 intentos y terminaron en `RuntimeError` con mensaje claro. Las peticiones fallidas no registraron costo. Se observó además un 429 real en vivo con backoff funcionando (esperas 2 → 4 s).
+
+## Registro del ensayo del pipeline (Bloque 15)
+
+- **Fecha:** 2026-10-30 · **Modelo:** `gemini-2.5-flash` (por defecto)
+- **Comando:** `python src/pipeline_texto.py` (3 consultas reales contra referencias propias, con registro impreso del antes y el después)
+- **Resultado por caso:** Caso 1 ("¿Qué es Python?") crudo 85.7% → procesado 100.0% (1 reintento; respuesta de 782 tokens de salida); Caso 2 (capital de Chile) 50.0% → 100.0%; Caso 3 (color del cielo) 75.0% → 100.0%
+- **Costo total del ensayo:** `$0.002679 USD` — solo éxitos, como en el Bloque 13
+- **Pruebas:** `python -m pytest tests/ -v` → 13 passed en ~0.1 s (11 del cliente modular + 2 del pipeline). Rápida porque todo es mock: nada toca la red.
+
+## Pruebas unitarias (Bloque 14)
+
+- **Qué cubre:** `tests/test_cliente.py`, 11 pruebas con mocks sobre el cliente modular — 5 de `enviar_peticion` (401/403 → `ValueError`, 429/503 → `TimeoutError`, éxito con `candidates`), 3 de `con_reintento` (reintenta `TimeoutError`, no toca `ValueError`, 3 intentos = 2 esperas), 1 de `registrar_costo` (entrada y salida por separado + acumulado igual) y 2 de `consultar_modelo` (`TimeoutError` agotado → `RuntimeError` claro, `ValueError` se propaga).
+- **Convención de mocks:** `patch` apunta donde se usa el nombre (`cliente.requests.post`, `cliente.time.sleep`), no donde se define. `enviar_peticion` está duplicada en `src/cliente.py` para que el cliente quede autocontenido (a pedido del curso).
 
 ## Qué sigue
 

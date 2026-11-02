@@ -160,3 +160,39 @@ def test_consultar_modelo_propaga_value_error():
     with patch("cliente.con_reintento", side_effect=error_simulado):
         with pytest.raises(ValueError, match="Credencial inválida"):
             consultar_modelo("pregunta de prueba")
+
+
+def test_consultar_modelo_pasa_intentos():
+    with patch("cliente.con_reintento", return_value={"ok": True}) as mock_reintento:
+        with patch("cliente.extraer_texto", return_value="respuesta"):
+            with patch("cliente.registrar_costo"):
+                consultar_modelo("pregunta de prueba", intentos=6)
+
+    # El pedido de más intentos llega a con_reintento; por defecto son 3.
+    assert mock_reintento.call_args.kwargs["intentos"] == 6
+
+
+def test_consultar_modelo_default_es_lite():
+    import inspect
+
+    assert inspect.signature(consultar_modelo).parameters["modelo"].default == "gemini-3.5-flash-lite"
+
+
+def test_consultar_modelo_acepta_gemini_3_5_flash_lite():
+    assert "gemini-3.5-flash-lite" in cliente.PRECIOS
+    respuesta_falsa = {"usageMetadata": {"promptTokenCount": 100, "candidatesTokenCount": 50}}
+
+    with patch("cliente.con_reintento", return_value=respuesta_falsa):
+        with patch("cliente.extraer_texto", return_value="texto"):
+            assert consultar_modelo("hola", modelo="gemini-3.5-flash-lite") == "texto"
+
+
+def test_registrar_costo_usa_precios_lite():
+    respuesta_falsa = {"usageMetadata": {"promptTokenCount": 1000, "candidatesTokenCount": 500}}
+    precios = cliente.PRECIOS["gemini-3.5-flash-lite"]
+
+    costo = cliente.registrar_costo(respuesta_falsa, precios["entrada"], precios["salida"])
+
+    esperado = (1000 * precios["entrada"]) + (500 * precios["salida"])
+    assert costo == esperado
+    assert cliente.costo_total_sesion == esperado

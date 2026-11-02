@@ -25,11 +25,14 @@ from consumir_gemini import (
 )
 
 # Precios reales por token (USD). Página oficial de precios de Google AI
-# (ai.google.dev/gemini-api/docs/pricing), consultada el 2026-10-20.
+# (ai.google.dev/gemini-api/docs/pricing), consultada el 2026-10-20 para
+# 2.5-flash y 3.6-flash, y el 2026-10-30 para 3.5-flash-lite (mismos
+# 0.30/2.50 USD por 1M, sin promoción con vencimiento).
 # Cotizado por 1M de tokens, convertido a por token (/ 1_000_000).
 PRECIOS = {
     "gemini-2.5-flash": {"entrada": 0.30 / 1_000_000, "salida": 2.50 / 1_000_000},
     "gemini-3.6-flash": {"entrada": 0.75 / 1_000_000, "salida": 3.75 / 1_000_000},
+    "gemini-3.5-flash-lite": {"entrada": 0.30 / 1_000_000, "salida": 2.50 / 1_000_000},
 }
 
 costo_total_sesion = 0.0
@@ -123,7 +126,7 @@ def registrar_costo(respuesta: dict, precio_entrada: float, precio_salida: float
     return costo
 
 
-def consultar_modelo(pregunta: str, system_instruction: str = "", modelo: str = "gemini-2.5-flash") -> str:
+def consultar_modelo(pregunta: str, system_instruction: str = "", modelo: str = "gemini-3.5-flash-lite", intentos: int = 3) -> str:
     precios = PRECIOS.get(modelo)
     if precios is None:
         raise ValueError(
@@ -132,7 +135,7 @@ def consultar_modelo(pregunta: str, system_instruction: str = "", modelo: str = 
         )
     url, body, headers = armar_peticion(pregunta, system_instruction or None, modelo=modelo)
     try:
-        respuesta = con_reintento(lambda: enviar_peticion(url, body, headers))
+        respuesta = con_reintento(lambda: enviar_peticion(url, body, headers), intentos=intentos)
     except TimeoutError:
         raise RuntimeError("El servicio no respondió tras varios intentos. Intenta más tarde.")
     registrar_costo(respuesta, precios["entrada"], precios["salida"])

@@ -27,7 +27,7 @@ from banco import BANCO_DE_PROMPTS  # noqa: E402
 
 INTENTOS_POR_PROMPT = 3
 PAUSA_ENTRE_LLAMADAS = 3
-MODELO = "gemini-2.5-flash"
+MODELO = "gemini-3.5-flash-lite"
 RUTA_SALIDA = os.path.join(os.path.dirname(os.path.abspath(__file__)), "registro_resultados.json")
 
 
