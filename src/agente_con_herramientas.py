@@ -1,8 +1,10 @@
-"""Agente con herramientas propias y traza de decisión (Bloque 21).
+"""Agente con herramientas propias, traza y memoria (Bloques 21 y 22).
 
 Dos herramientas de soporte postventa: consultar_estado_pedido (dónde
-está un pedido) y calcular_reembolso (cuánto dinero se devuelve). El
-agente decide por sí mismo cuál usar según la entrada, o ninguna.
+está un pedido) y calcular_reembolso (cuánto dinero se devuelve, con
+args_schema). El agente decide por sí mismo cuál usar según la entrada,
+o ninguna; el Bloque 22 suma memoria por sesión para referirse a turnos
+anteriores.
 
 Ejecutar desde la raíz del repositorio:
     python src/agente_con_herramientas.py
@@ -10,9 +12,12 @@ Ejecutar desde la raíz del repositorio:
 
 from dotenv import load_dotenv
 from langchain_classic.agents import AgentExecutor, create_tool_calling_agent
+from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
+from pydantic import BaseModel, Field
 
 MODELO = "gemini-3.5-flash-lite"
 
@@ -35,7 +40,16 @@ def consultar_estado_pedido(numero_seguimiento: str) -> str:
         )
 
 
-@tool
+class ArgumentosReembolso(BaseModel):
+    monto_pagado: float = Field(
+        description="Monto pagado por la compra, en pesos. Por ejemplo 20000."
+    )
+    dias_uso: int = Field(
+        description="Días de uso del producto desde la compra. Por ejemplo 45."
+    )
+
+
+@tool(args_schema=ArgumentosReembolso)
 def calcular_reembolso(monto_pagado: float, dias_uso: int) -> str:
     """Calcula cuánto dinero se devuelve por una compra según el
     monto pagado y los días de uso, aplicando la política de
@@ -95,6 +109,65 @@ def texto_respuesta(salida):
     )
 
 
+historiales = {}
+
+
+def obtener_historial(session_id: str):
+    """Devuelve el historial de la sesión, creándolo si no existe.
+
+    Vive en memoria: se pierde al reiniciar. Para persistencia real,
+    reemplazar esta función por una que lea/escriba en base de datos;
+    el resto no cambia.
+    """
+    if session_id not in historiales:
+        historiales[session_id] = InMemoryChatMessageHistory()
+    return historiales[session_id]
+
+
+def cerrar_sesion(session_id: str):
+    """Borra el historial de una sesión (idempotente: no falla si no existe)."""
+    historiales.pop(session_id, None)
+
+
+def aplanar_salida(resultado):
+    """Deja output como texto plano para que el historial guarde un
+    AIMessage limpio (el modelo devuelve bloques de contenido, que no
+    hacen round-trip al reinyectarse en el turno siguiente)."""
+    return {**resultado, "output": texto_respuesta(resultado["output"])}
+
+
+def construir_agente_con_memoria(modelo):
+    """Arma el agente con historial en el prompt y lo envuelve en
+    memoria por sesión (sin ejecutar nada todavía)."""
+    herramientas = [consultar_estado_pedido, calcular_reembolso]
+    prompt_agente = ChatPromptTemplate.from_messages(
+        [
+            (
+                "system",
+                "Eres un asistente de soporte postventa que responde "
+                "preguntas usando las herramientas disponibles cuando "
+                "las necesites.",
+            ),
+            MessagesPlaceholder("chat_history"),
+            ("human", "{entrada}"),
+            MessagesPlaceholder("agent_scratchpad"),
+        ]
+    )
+    agente = create_tool_calling_agent(modelo, herramientas, prompt_agente)
+    ejecutor = AgentExecutor(
+        agent=agente,
+        tools=herramientas,
+        verbose=True,
+        return_intermediate_steps=True,
+    )
+    return RunnableWithMessageHistory(
+        ejecutor | aplanar_salida,
+        obtener_historial,
+        input_messages_key="entrada",
+        history_messages_key="chat_history",
+    )
+
+
 if __name__ == "__main__":
     load_dotenv()
     ejecutor = construir_ejecutor(ChatGoogleGenerativeAI(model=MODELO))
@@ -117,3 +190,28 @@ if __name__ == "__main__":
         print()
         assert usada == esperada, f"esperaba {esperada}, usó {usada}"
     print("3 validaciones manuales OK")
+
+    print("--- memoria (Bloque 22) ---")
+    agente_memoria = construir_agente_con_memoria(
+        ChatGoogleGenerativeAI(model=MODELO)
+    )
+    config_a = {"configurable": {"session_id": "cliente_1"}}
+    turno_1 = agente_memoria.invoke(
+        {"entrada": "¿Dónde está mi pedido PED1001?"}, config_a
+    )
+    print("T1:", texto_respuesta(turno_1["output"]))
+    turno_2 = agente_memoria.invoke(
+        {"entrada": "¿Y ese pedido ya fue entregado?"}, config_a
+    )
+    print("T2:", texto_respuesta(turno_2["output"]))
+    assert len(obtener_historial("cliente_1").messages) == 4
+    config_b = {"configurable": {"session_id": "cliente_2"}}
+    aislado = agente_memoria.invoke(
+        {"entrada": "¿De qué pedido te pregunté?"}, config_b
+    )
+    print("aislado:", texto_respuesta(aislado["output"]))
+    assert len(obtener_historial("cliente_2").messages) == 2
+    assert "PED1001" not in texto_respuesta(aislado["output"])
+    cerrar_sesion("cliente_2")
+    assert "cliente_2" not in historiales
+    print("memoria 2 turnos + aislamiento + cierre OK")
