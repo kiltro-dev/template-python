@@ -1,8 +1,9 @@
-"""Indexación del corpus con chunking, embeddings y persistencia en Chroma (Bloque 24).
+"""Indexación del corpus con chunking, embeddings y persistencia en Chroma (Bloques 24 y 26).
 
 Corpus propio sobre la miniaplicación (errores, costo, agente, pruebas y
 chains), partido con chunking recursivo, indexado con embeddings reales de
-Gemini y persistido en disco para consultas sin re-indexar.
+Gemini y persistido en disco para consultas sin re-indexar. Desde el Bloque 26
+cada chunk lleva metadata (fuente) e id predecible para citas y evaluación.
 
 Ejecutar desde la raíz del repositorio, con el entorno virtual activo:
     python src/indexar_corpus.py
@@ -57,13 +58,30 @@ def construir_splitter():
     )
 
 
+def construir_metadatas(corpus):
+    """Una fuente por documento, en la misma posición (el splitter la
+    propaga a cada chunk que salga de ese documento)."""
+    return [{"fuente": f"doc{i}.md"} for i in range(len(corpus))]
+
+
 def indexar_corpus(corpus, splitter, embeddings, persist_directory):
-    """Parte, calcula un embedding por chunk y persiste (sin ejecutar nada
+    """Parte documento por documento (para ids trazables), calcula un
+    embedding por chunk y persiste con metadata e ids (sin ejecutar nada
     fuera de esta llamada: recibe splitter y embeddings inyectados)."""
-    chunks = splitter.create_documents(corpus)
+    metadatas = construir_metadatas(corpus)
+    chunks = []
+    ids = []
+    for i, documento in enumerate(corpus):
+        subchunks = splitter.create_documents(
+            [documento], metadatas=[metadatas[i]]
+        )
+        for j, chunk in enumerate(subchunks):
+            chunks.append(chunk)
+            ids.append(f"doc{i}" if len(subchunks) == 1 else f"doc{i}_c{j}")
     vectorstore = Chroma.from_documents(
         documents=chunks,
         embedding=embeddings,
+        ids=ids,
         persist_directory=persist_directory,
     )
     return vectorstore, len(chunks)
@@ -96,4 +114,4 @@ if __name__ == "__main__":
         print("Detalle técnico:", mensaje)
         raise SystemExit(1)
 
-    print(f"Indexados {total} chunks en {DIR_VECTORSTORE}")
+    print(f"Indexados {total} chunks en {DIR_VECTORSTORE} (con metadata e ids)")
