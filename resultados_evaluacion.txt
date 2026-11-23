@@ -1,0 +1,16 @@
+Fecha: 2026-11-23
+Configuracion: k=3, chunk_size=200, chunk_overlap=30
+
+0.33  1.00  que hace el cliente si una llamada tarda demasiado
+0.33  1.00  que pasa si la clave de api es invalida
+0.33  1.00  como se calcula el costo de una llamada
+0.33  1.00  como decide el agente que herramienta usar
+0.67  1.00  que herramientas tiene el agente de postventa
+0.33  1.00  cuantas llamadas al modelo implica cada accion del agente
+0.67  1.00  como se verifica que herramienta eligio el agente en cada caso
+0.33  1.00  cuanto tarda la suite de pruebas en correr
+0.33  1.00  que operador conecta los pasos de una chain
+0.33  1.00  que protege el flujo completo si falla un paso
+0.00  n/a  cual es la politica de vacaciones de la empresa
+
+promedio -> precision: 0.364  recall: 1.000
