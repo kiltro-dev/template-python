@@ -27,3 +27,6 @@ package-lock.json
 
 # Apuntes de estudio (sitio personal, no se sube)
 apuntes/
+
+# Índice vectorial generado (se reconstruye con src/indexar_corpus.py)
+vectorstore/
