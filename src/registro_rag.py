@@ -8,6 +8,7 @@ Ejecutar desde la raíz del repositorio, con el entorno virtual activo:
     python src/registro_rag.py
 """
 
+import hashlib
 import json
 import os
 import time
@@ -72,7 +73,9 @@ def registrar_consulta(pregunta, persist_directory, k=3):
 
     registro = {
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "pregunta": pregunta,
+        # gobernanza (Gate 2, #3): huella+longitud, nunca el texto crudo
+        "pregunta_len": len(pregunta),
+        "pregunta_huella": hashlib.sha256(pregunta.encode("utf-8")).hexdigest()[:12],
         "k": k,
         "tiempos_ms": {etapa: round(s * 1000, 2) for etapa, s in tiempos.items()},
         "tiempo_total_ms": round(sum(tiempos.values()) * 1000, 2),

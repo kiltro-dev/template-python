@@ -93,6 +93,12 @@ esqueleto = generar_esqueleto_decision(
 )
 print(esqueleto)
 
-with open("docs/decision_personalizacion.md", "w", encoding="utf-8") as f:
-    f.write(esqueleto)
-print("Esqueleto guardado en docs/decision_personalizacion.md")
+import os as _os
+
+# no sobrescribir jamás el documento manual: solo se genera si no existe
+if not _os.path.exists("docs/decision_personalizacion.md"):
+    with open("docs/decision_personalizacion.md", "w", encoding="utf-8") as f:
+        f.write(esqueleto)
+    print("Esqueleto guardado en docs/decision_personalizacion.md")
+else:
+    print("docs/decision_personalizacion.md ya existe: no se sobrescribe")

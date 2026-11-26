@@ -71,6 +71,6 @@ if __name__ == "__main__":
         "como decide el agente que herramienta usar",
     ]:
         prompt, citas = construir_prompt(pregunta, DIR_VECTORSTORE)
-        print(prompt)
+        print(f"prompt: {len(prompt)} caracteres")  # gobernanza: sin texto crudo
         print(citas)
         print("=" * 60)
