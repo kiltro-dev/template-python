@@ -2,7 +2,7 @@
 
 > **Especialización en Desarrollo con IA Generativa (Accenture) — Gate 1 aprobado · Módulo 2 en curso**
 >
-> Miniaplicación que envía preguntas a la API de Gemini vía REST y devuelve la respuesta. El proyecto incluye además el cálculo del costo real por petición, manejo de errores, prompts de sistema, salida JSON estructurada, un banco de prompts con validación de consistencia y un cliente modular con reintento y clasificación de errores.
+> Miniaplicación que envía preguntas a la API de Gemini vía REST y devuelve la respuesta. El proyecto incluye además el cálculo del costo real por petición, manejo de errores, prompts de sistema, salida JSON estructurada, un banco de prompts con validación de consistencia y un cliente modular con reintento y clasificación de errores. En el Módulo 2 creció a un servicio RAG con recuperación citada, personalización fundamentada, observabilidad y gobernanza (ver Gate 2).
 
 Este repositorio es el proyecto único del programa: nace como esta miniaplicación (Módulo 1) y crece hasta la aplicación generativa completa del Gate 3 (Módulo 2: LangChain, agentes y RAG · Módulo 3: FastAPI, Docker y QA).
 
@@ -34,10 +34,10 @@ python src/main.py
 ```
 
 ```
-Confirmado: la conexión funciona.
+¡Conexión establecida y funcionando al 100%!
 ```
 
-✅ Éxito = respuesta del modelo impresa y proceso terminado sin `Traceback` (el texto varía en cada corrida).
+✅ Éxito = respuesta del modelo impresa y proceso terminado sin `Traceback` (el texto varía en cada corrida). Con red lenta puede fallar con `TimeoutError` (timeout fijo de 10 s, código Gate 1 sin reintento): reintentar.
 
 ## Ejecutar el servicio RAG (Gate 2)
 
@@ -86,6 +86,9 @@ python -m pytest tests/test_gate2.py -v   # 4 no compensables
 ├── resultados_evaluacion.txt  # P 0.364 / R 1.000 (Bloque 27)
 ├── registros_latencia_costo.jsonl  # corridas instrumentadas (Bloque 28)
 ├── trazas_agente.jsonl        # trazas del agente supervisado (Bloque 23)
+├── revision_manual.py         # rúbrica cualitativa sobre muestra (Bloque 17)
+├── revision_manual.json       # veredictos de la revisión manual
+├── resultados_metricas.json   # P/C/F1 sobre salidas reales (Bloque 16)
 ├── verificar_entorno.py       # chequeo pre-corrida del Gate 2
 ├── requirements.txt
 ├── .env.example
@@ -104,7 +107,7 @@ Desde la raíz del repositorio, con el entorno virtual activo:
 | `python src/comparar_modelos.py` | Latencia, costo y calidad de 2 modelos | `docs/tarea_modulo1_bloque9/comparativa_modelos.json` |
 | `python prompts/test_consistencia.py` | Banco de prompts, 3 repeticiones c/u | `prompts/registro_resultados.json` |
 | `python src/indexar_corpus.py` | Indexa 9 chunks con metadata e ids | `vectorstore/` |
-| `python src/recuperacion.py` | 2 preguntas → prompts con citas | consola |
+| `python src/recuperacion.py` | 2 preguntas → longitudes + citas (sin texto crudo) | consola |
 | `python src/evaluacion_recuperacion.py` | P/R sobre 11 casos | `resultados_evaluacion.txt` |
 | `python src/registro_rag.py` | 3 consultas instrumentadas | `registros_latencia_costo.jsonl` |
 | `python src/dataset_tuning.py` | 12 ejemplos + balance + validación | consola |
@@ -200,4 +203,4 @@ No compensables: `tests/test_gate2.py` (4 tests contra servicio y grafo reales) 
 
 ## Qué sigue
 
-Gate 2 (esta entrega) → Módulo 3 (FastAPI, Docker, QA) → Gate 3.
+Módulo 3 (FastAPI, Docker, QA) → Gate 3.
